@@ -1,0 +1,52 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.production
+
+# Documentation and text files (not for GitHub)
+*.md
+*.txt
+!README.md
+
+# Deployment scripts
+deploy-to-hetzner.sh
+quick-deploy-commands.txt
+
+# Temporary sensitive files
+*.secret
+*-secret.txt
+
+# Stripe Keys
+sk_live_*
+sk_test_*
+pk_live_*
+pk_test_*
+whsec_*
+
+# IDE and OS files
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Build files
+dist/
+build/
