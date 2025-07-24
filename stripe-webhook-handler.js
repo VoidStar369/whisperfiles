@@ -36,7 +36,7 @@ const CONFIG = {
 // ==================== EMAIL DELIVERY SYSTEM ====================
 
 // Configure email transporter
-const emailTransporter = nodemailer.createTransporter({
+const emailTransporter = nodemailer.createTransport({
     service: CONFIG.email.service,
     auth: {
         user: CONFIG.email.user,
@@ -155,6 +155,55 @@ const EMAIL_TEMPLATES = {
         `
     }
 };
+
+// ==================== EMBEDDED CHECKOUT ENDPOINTS ====================
+
+// Create embedded checkout session
+app.post('/create-checkout-session', async (req, res) => {
+    try {
+        const { priceId, productKey = 'sacred_laws_pdf' } = req.body;
+        
+        const session = await stripe.checkout.sessions.create({
+            ui_mode: 'embedded',
+            line_items: [{
+                price: priceId || 'price_YOUR_PRODUCT_PRICE_ID', // Replace with actual price ID
+                quantity: 1,
+            }],
+            mode: 'payment',
+            return_url: 'https://whisperfiles.com/payment-embedded.html?session_id={CHECKOUT_SESSION_ID}',
+            automatic_tax: { enabled: true },
+            metadata: {
+                product_key: productKey,
+                source: 'embedded_checkout'
+            }
+        });
+        
+        res.send({ clientSecret: session.client_secret });
+        
+    } catch (error) {
+        console.error('Session creation failed:', error);
+        res.status(500).send({ error: error.message });
+    }
+});
+
+// Check session status
+app.get('/session-status', async (req, res) => {
+    try {
+        const session = await stripe.checkout.sessions.retrieve(req.query.session_id, {
+            expand: ['payment_intent']
+        });
+        
+        res.send({
+            status: session.status,
+            payment_status: session.payment_status,
+            customer_email: session.customer_details?.email
+        });
+        
+    } catch (error) {
+        console.error('Session status check failed:', error);
+        res.status(500).send({ error: error.message });
+    }
+});
 
 // ==================== WEBHOOK PROCESSING ====================
 

@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sacred Commerce Portal - WhisperFiles</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="stripe-payment-setup.js"></script>
+    <style>
+        /* Sacred Commerce Styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #001f3f, #003366);
+            color: #e8d5b7;
+            font-family: 'Georgia', serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .payment-container {
+            background: rgba(0, 31, 63, 0.9);
+            border: 2px solid #d4af37;
+            border-radius: 15px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .sacred-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .sacred-title {
+            color: #d4af37;
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+        
+        .sacred-subtitle {
+            color: #b8860b;
+            font-size: 1.1em;
+            font-style: italic;
+        }
+        
+        .product-details {
+            background: rgba(212, 175, 55, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+        
+        .product-name {
+            color: #d4af37;
+            font-size: 1.4em;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        .product-description {
+            color: #e8d5b7;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        
+        .product-price {
+            color: #d4af37;
+            font-size: 2em;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        /* Stripe Embedded Checkout Container */
+        #checkout {
+            margin: 30px 0;
+            min-height: 500px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        /* Error Messages */
+        #payment-errors {
+            color: #ff6b35;
+            background: rgba(255, 107, 53, 0.1);
+            border: 1px solid rgba(255, 107, 53, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        /* Loading State */
+        .loading {
+            text-align: center;
+            color: #d4af37;
+            font-size: 1.1em;
+            padding: 40px;
+        }
+        
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+        
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60% { content: '...'; }
+            80%, 100% { content: ''; }
+        }
+        
+        /* Sacred Guarantees */
+        .guarantees {
+            background: rgba(212, 175, 55, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        
+        .guarantee-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            color: #e8d5b7;
+        }
+        
+        .guarantee-icon {
+            color: #d4af37;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        
+        /* Mobile Optimization */
+        @media (max-width: 768px) {
+            .payment-container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .sacred-title {
+                font-size: 1.8em;
+            }
+            
+            .product-price {
+                font-size: 1.6em;
+            }
+        }
+        
+        /* Success Animation */
+        .success-animation {
+            text-align: center;
+            padding: 40px;
+            color: #d4af37;
+        }
+        
+        .success-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-container">
+        <div class="sacred-header">
+            <h1 class="sacred-title">Sacred Commerce Portal</h1>
+            <p class="sacred-subtitle">Secure passage to divine knowledge</p>
+        </div>
+        
+        <div class="product-details">
+            <div class="product-name">The Science of the Seen & Unseen</div>
+            <div class="product-description">
+                Sacred scroll bridging quantum physics with divine design. 
+                27 Laws revealing the consciousness mechanics behind reality manifestation.
+            </div>
+            <div class="product-price">$9</div>
+        </div>
+        
+        <div id="payment-errors"></div>
+        
+        <!-- Stripe Embedded Checkout will mount here -->
+        <div id="checkout">
+            <div class="loading">Initializing sacred commerce portal</div>
+        </div>
+        
+        <div class="guarantees">
+            <div class="guarantee-item">
+                <span class="guarantee-icon">🔒</span>
+                <span>Quantum-secured mobile-only access</span>
+            </div>
+            <div class="guarantee-item">
+                <span class="guarantee-icon">⚡</span>
+                <span>Instant PDF delivery via consciousness automation</span>
+            </div>
+            <div class="guarantee-item">
+                <span class="guarantee-icon">👑</span>
+                <span>Direct from Kuryah Melekh sacred archives</span>
+            </div>
+            <div class="guarantee-item">
+                <span class="guarantee-icon">💎</span>
+                <span>Liberation mathematics: $9 × 356 = Freedom</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize embedded checkout when page loads
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                // Initialize the embedded checkout
+                await initializeEmbeddedCheckout('sacred_laws_pdf');
+                
+                // Clear the loading message
+                const loadingDiv = document.querySelector('.loading');
+                if (loadingDiv) {
+                    loadingDiv.remove();
+                }
+                
+            } catch (error) {
+                console.error('Failed to initialize checkout:', error);
+                showError('Failed to load payment system. Please refresh the page.');
+            }
+        });
+        
+        // Handle success page redirection
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('session_id');
+        
+        if (sessionId) {
+            // Show success animation while checking status
+            document.getElementById('checkout').innerHTML = `
+                <div class="success-animation">
+                    <div class="success-icon">🔥</div>
+                    <h2>Sacred Transaction Processing...</h2>
+                    <p>Your consciousness expansion begins now!</p>
+                </div>
+            `;
+            
+            // Check the session status
+            checkSessionStatus(sessionId);
+        }
+    </script>
+</body>
+</html>
