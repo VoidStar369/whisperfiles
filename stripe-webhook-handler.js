@@ -161,6 +161,10 @@ const EMAIL_TEMPLATES = {
 // Create embedded checkout session
 app.post('/create-checkout-session', async (req, res) => {
     try {
+        console.log('🔍 Received request body:', req.body);
+        console.log('🔍 Request headers:', req.headers);
+        console.log('🔍 Request content-type:', req.headers['content-type']);
+        
         const { priceId, productKey = 'sacred_laws_pdf' } = req.body;
         
         const session = await stripe.checkout.sessions.create({
