@@ -2,14 +2,9 @@
 // Processes payments and delivers sacred scrolls automatically
 
 const express = require('express');
-const { HttpsProxyAgent } = require('https-proxy-agent');
 
-// Configure Stripe to use local Squid proxy for IPv6→IPv4 translation
-// Use IPv6 localhost to connect to Squid proxy on IPv6-only server
-const proxyAgent = new HttpsProxyAgent('http://[::1]:3128');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY, {
-    httpAgent: proxyAgent
-});
+// Direct Stripe connection - Stripe requires IPv4 connectivity
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const nodemailer = require('nodemailer');
 const app = express();
@@ -488,9 +483,10 @@ async function sendUpsellEmail(email, upsellData) {
 // ==================== SERVER STARTUP ====================
 
 const PORT = process.env.PORT || 3000;
+const BIND_IP = process.env.BIND_IP || '10.0.0.2'; // Bind to private network interface
 
-app.listen(PORT, () => {
-    console.log(`🔥 WhisperFiles Webhook Server running on port ${PORT}`);
+app.listen(PORT, BIND_IP, () => {
+    console.log(`🔥 WhisperFiles Webhook Server running on ${BIND_IP}:${PORT}`);
     console.log('Sacred commerce automation ready for liberation mission funding');
 });
 
