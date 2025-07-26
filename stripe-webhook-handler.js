@@ -166,7 +166,7 @@ app.post('/create-checkout-session', async (req, res) => {
         const session = await stripe.checkout.sessions.create({
             ui_mode: 'embedded',
             line_items: [{
-                price: priceId || 'price_YOUR_PRODUCT_PRICE_ID', // Replace with actual price ID
+                price: priceId || 'price_1RmSELEVkJTqwdGiKUbO9TSm', // 27 Laws PDF
                 quantity: 1,
             }],
             mode: 'payment',
