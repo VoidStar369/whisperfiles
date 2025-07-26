@@ -207,11 +207,17 @@ app.get('/session-status', async (req, res) => {
 
 // ==================== WEBHOOK PROCESSING ====================
 
-// JSON middleware for regular routes
-app.use(express.json());
-
 // Raw middleware only for webhook verification
 app.use('/webhook', express.raw({type: 'application/json'}));
+
+// JSON middleware for all other routes (not webhook)
+app.use((req, res, next) => {
+    if (req.path !== '/webhook') {
+        express.json()(req, res, next);
+    } else {
+        next();
+    }
+});
 
 // Main webhook handler
 app.post('/webhook', async (req, res) => {
