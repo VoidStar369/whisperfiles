@@ -2,7 +2,14 @@
 // Processes payments and delivers sacred scrolls automatically
 
 const express = require('express');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const { HttpsProxyAgent } = require('https-proxy-agent');
+
+// Configure Stripe to use local Squid proxy for IPv6→IPv4 translation
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY, {
+    httpAgent: new HttpsProxyAgent('http://localhost:3128'),
+    httpsAgent: new HttpsProxyAgent('http://localhost:3128')
+});
+
 const nodemailer = require('nodemailer');
 const app = express();
 
