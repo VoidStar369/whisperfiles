@@ -226,19 +226,28 @@
     <script>
         // Initialize embedded checkout when page loads
         document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🔥 Initializing embedded checkout...');
             try {
                 // Initialize the embedded checkout
-                await initializeEmbeddedCheckout('sacred_laws_pdf');
+                const checkout = await initializeEmbeddedCheckout('sacred_laws_pdf');
+                console.log('✅ Checkout initialized:', checkout);
                 
-                // Clear the loading message
+                // Clear the loading message only after successful mount
                 const loadingDiv = document.querySelector('.loading');
                 if (loadingDiv) {
                     loadingDiv.remove();
+                    console.log('✅ Loading message cleared');
                 }
                 
             } catch (error) {
-                console.error('Failed to initialize checkout:', error);
-                showError('Failed to load payment system. Please refresh the page.');
+                console.error('❌ Failed to initialize checkout:', error);
+                document.getElementById('checkout').innerHTML = `
+                    <div style="text-align: center; color: #ff6b35; padding: 40px;">
+                        <h3>Payment System Error</h3>
+                        <p>Failed to load checkout: ${error.message}</p>
+                        <button onclick="location.reload()" style="background: #d4af37; color: #000; padding: 10px 20px; border: none; border-radius: 5px; margin-top: 15px;">Retry</button>
+                    </div>
+                `;
             }
         });
         
