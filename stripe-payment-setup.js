@@ -39,7 +39,7 @@ async function initializeEmbeddedCheckout(productKey = 'sacred_laws_pdf') {
         stripe = Stripe(STRIPE_CONFIG.publishableKey);
         
         // Create checkout session on server
-        const response = await fetch('https://whisperfiles.com:3000/create-checkout-session', {
+        const response = await fetch('/create-checkout-session', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
