@@ -13,7 +13,7 @@ const STRIPE_CONFIG = {
         sacred_laws_pdf: {
             name: 'The Science of the Seen & Unseen - 27 Laws',
             description: 'Sacred scroll bridging quantum physics with divine design',
-            priceId: 'price_YOUR_PRODUCT_PRICE_ID', // Replace with actual price ID
+            priceId: 'price_1RmSELEVkJTqwdGiKUbO9TSm', // 27 Laws PDF
             amount: 900, // $9.00 in cents
             currency: 'usd'
         },
@@ -39,7 +39,7 @@ async function initializeEmbeddedCheckout(productKey = 'sacred_laws_pdf') {
         stripe = Stripe(STRIPE_CONFIG.publishableKey);
         
         // Create checkout session on server
-        const response = await fetch('/create-checkout-session', {
+        const response = await fetch('https://whisperfiles.com:3000/create-checkout-session', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -134,7 +134,7 @@ app.post('/create-checkout-session', async (req, res) => {
                 quantity: 1,
             }],
             mode: 'payment',
-            return_url: 'https://whisperfiles.com/success?session_id={CHECKOUT_SESSION_ID}',
+            return_url: 'https://whisperfiles.com/payment-embedded.html?session_id={CHECKOUT_SESSION_ID}',
             automatic_tax: { enabled: true },
             customer_email: req.body.email, // Optional: prefill email
         });
@@ -168,11 +168,14 @@ app.get('/session-status', async (req, res) => {
 // ==================== SACRED COMMERCE INTEGRATION ====================
 
 // Check for return from Stripe (success page)
-const urlParams = new URLSearchParams(window.location.search);
-const sessionId = urlParams.get('session_id');
-
-if (sessionId) {
-    checkSessionStatus(sessionId);
+// Only check if we're not in an iframe/embedded context
+if (window.self === window.top) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionId = urlParams.get('session_id');
+    
+    if (sessionId && typeof checkSessionStatus === 'function') {
+        checkSessionStatus(sessionId);
+    }
 }
 
 // Export for module use
