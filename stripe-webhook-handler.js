@@ -165,7 +165,17 @@ app.post('/create-checkout-session', async (req, res) => {
         console.log('🔍 Request headers:', req.headers);
         console.log('🔍 Request content-type:', req.headers['content-type']);
         
-        const { priceId, productKey = 'sacred_laws_pdf' } = req.body;
+        // Handle case where req.body is undefined or empty
+        if (!req.body || typeof req.body !== 'object') {
+            console.log('⚠️ req.body is undefined or not an object, using defaults');
+        }
+        
+        const body = req.body || {};
+        const productKey = body.productKey || 'sacred_laws_pdf';
+        const priceId = body.priceId || 'price_1RmSELEVkJTqwdGiKUbO9TSm';
+        
+        console.log('✅ Using productKey:', productKey);
+        console.log('✅ Using priceId:', priceId);
         
         const session = await stripe.checkout.sessions.create({
             ui_mode: 'embedded',
