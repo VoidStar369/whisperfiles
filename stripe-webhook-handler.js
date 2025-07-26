@@ -5,8 +5,8 @@ const express = require('express');
 const { HttpsProxyAgent } = require('https-proxy-agent');
 
 // Configure Stripe to use local Squid proxy for IPv6→IPv4 translation
-// Force IPv4 localhost to avoid Node.js preferring IPv6
-const proxyAgent = new HttpsProxyAgent('http://127.0.0.1:3128');
+// Use IPv6 localhost to connect to Squid proxy on IPv6-only server
+const proxyAgent = new HttpsProxyAgent('http://[::1]:3128');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY, {
     httpAgent: proxyAgent
 });
