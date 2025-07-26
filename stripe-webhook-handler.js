@@ -184,6 +184,7 @@ app.post('/create-checkout-session', async (req, res) => {
         
         console.log('✅ Using productKey:', productKey);
         console.log('✅ Using priceId:', priceId);
+        console.log('🔍 About to call Stripe API through proxy [::1]:3128...');
         
         const session = await stripe.checkout.sessions.create({
             ui_mode: 'embedded',
@@ -200,10 +201,18 @@ app.post('/create-checkout-session', async (req, res) => {
             }
         });
         
+        console.log('✅ Stripe session created successfully:', session.id);
         res.send({ clientSecret: session.client_secret });
         
     } catch (error) {
-        console.error('Session creation failed:', error);
+        console.error('❌ Session creation failed:', error);
+        console.error('❌ Error name:', error.name);
+        console.error('❌ Error type:', error.type);
+        console.error('❌ Error code:', error.code);
+        console.error('❌ Error message:', error.message);
+        if (error.raw) {
+            console.error('❌ Raw response:', error.raw);
+        }
         res.status(500).send({ error: error.message });
     }
 });
