@@ -38,6 +38,8 @@ async function initializeEmbeddedCheckout(productKey = 'sacred_laws_pdf') {
         // Initialize Stripe
         stripe = Stripe(STRIPE_CONFIG.publishableKey);
         
+        console.log('🔥 Making fetch request to /create-checkout-session');
+        
         // Create checkout session on server
         const response = await fetch('/create-checkout-session', {
             method: 'POST',
@@ -50,7 +52,19 @@ async function initializeEmbeddedCheckout(productKey = 'sacred_laws_pdf') {
             })
         });
         
-        const { clientSecret } = await response.json();
+        console.log('📡 Response status:', response.status);
+        console.log('📡 Response ok:', response.ok);
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('❌ Server response error:', errorText);
+            throw new Error(`Server responded with ${response.status}: ${errorText}`);
+        }
+        
+        const responseData = await response.json();
+        console.log('✅ Response data:', responseData);
+        
+        const { clientSecret } = responseData;
         
         // Initialize embedded checkout
         checkout = await stripe.initEmbeddedCheckout({
